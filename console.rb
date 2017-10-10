@@ -2,7 +2,8 @@ require("pry-byebug")
 require("pry")
 require_relative("models/bounty_hunter.rb")
 
-Bounty.delete_all()
+# Bounty.delete_all()
+Bounty.find()
 
 
 bounty_1 = Bounty.new(

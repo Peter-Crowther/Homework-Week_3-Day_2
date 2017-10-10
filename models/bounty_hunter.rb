@@ -80,4 +80,21 @@ def initialize(options)
     db.close()
   end
 
+  def self.find()
+    db = PG.connect({
+      dbname: "bounty_hunter",
+      host: "localhost"
+      })
+      sql = "SELECT * FROM bounties WHERE id = $1"
+      values = [@id]
+      db.prepare("find", sql)
+      bounties = db.exec_prepared("find", values)
+      db.close()
+
+      bounty_1 = bounties.map{ |bounty| Bounty.new(bounty)}
+      bounty_1 = Bounty.find()
+      puts bounty_1
+
+  end
+
 end
