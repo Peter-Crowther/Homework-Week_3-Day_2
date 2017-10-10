@@ -26,4 +26,58 @@ def initialize(options)
     db.close()
   end
 
+  def self.all()
+    db = PG.connect({
+      dbname: "bounty_hunter",
+      host: "localhost"
+      })
+      sql = "SELECT * FROM bounties"
+      values = []
+      db.prepare("all", sql)
+      bounties = db.exec_prepared("all", values)
+      db.close()
+
+      bounties_as_objects = bounties.map{ |bounty| Bounty.new(bounty)}
+      return bounties_as_objects
+  end
+
+  def update()
+      db = PG.connect({
+      dbname: "bounty_hunter",
+        host: "localhost"
+        })
+        sql = "UPDATE bounties
+                SET (name, species, bounty_value, danger_level) = ($1, $2, $3, $4)
+                WHERE id = $5
+        "
+        values = [@name, @species, @bounty_value, @danger_level, @id]
+        db.prepare("update", sql)
+        db.exec_prepared("update", values)
+        db.close()
+    end
+
+    def delete()
+    db = PG.connect({
+      dbname: "bounty_hunter",
+      host: "localhost"
+      })
+      sql = "DELETE FROM bounties WHERE id = $1"
+      values = [@id]
+      db.prepare("delete_one", sql)
+      db.exec_prepared("delete_one", values)
+      db.close()
+  end
+
+  def self.delete_all
+    db = PG.connect({
+    dbname: "bounty_hunter",
+    host: "localhost"
+    })
+    sql = "DELETE FROM bounties"
+    values = []
+    db.prepare("delete_all", sql)
+    db.exec_prepared("delete_all", values)
+    db.close()
+  end
+
 end
