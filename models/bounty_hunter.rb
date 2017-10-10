@@ -11,4 +11,19 @@ def initialize(options)
     @danger_level = options["danger_level"].to_i()
   end
 
+  def save
+    db = PG.connect({
+      dbname: "bounty_hunter",
+      host: "localhost"
+    })
+    sql = "INSERT INTO bounties(name, species, bounty_value, danger_level)
+    VALUES($1, $2, $3, $4)
+    RETURNING *
+    "
+    values = [@name, @species, @bounty_value, @danger_level]
+    db.prepare("save_order", sql)
+      @id = db.exec_prepared("save_order", values)[0]["id"].to_i()
+    db.close()
+  end
+
 end
