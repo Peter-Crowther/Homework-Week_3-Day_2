@@ -3,7 +3,7 @@ class Bounty
 attr_accessor :name, :species, :bounty_value, :danger_level
 attr_reader :id
 
-def initialize(options)
+  def initialize(options)
     @id = options["id"].to_i if options["id"]
     @name = options["name"]
     @species = options["species"]
@@ -18,7 +18,7 @@ def initialize(options)
     })
     sql = "INSERT INTO bounties(name, species, bounty_value, danger_level)
     VALUES($1, $2, $3, $4)
-    RETURNING *
+    RETURNING id
     "
     values = [@name, @species, @bounty_value, @danger_level]
     db.prepare("save_order", sql)
@@ -80,21 +80,19 @@ def initialize(options)
     db.close()
   end
 
-  def self.find()
+  def Bounty.find(id)
     db = PG.connect({
       dbname: "bounty_hunter",
       host: "localhost"
       })
       sql = "SELECT * FROM bounties WHERE id = $1"
-      values = [@id]
+      values = [id]
       db.prepare("find", sql)
-      bounties = db.exec_prepared("find", values)
+      bounties_array = db.exec_prepared("find", values)
+      bounties_hash = bounties_array[0]
+      bounty = Bounty.new(bounties_hash)
+      return bounty
       db.close()
-
-      bounty_1 = bounties.map{ |bounty| Bounty.new(bounty)}
-      bounty_1 = Bounty.find()
-      puts bounty_1
-
   end
 
 end
